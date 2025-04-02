@@ -1,0 +1,27 @@
+syntax = 'proto3';
+
+package auth;
+
+import "google/protobuf/empty.proto";
+
+option go_package = 'kolesa_proto.sso.v1;ssov1';
+
+service Auth {
+  rpc SendVerificationCode (SendVerificationCodeRequest) returns (google.protobuf.Empty);
+  rpc VerifyCode (VerifyCodeRequest) returns (VerifyCodeResponse);
+}
+
+message SendVerificationCodeRequest {
+  string phoneNumber = 1;
+}
+
+message VerifyCodeRequest {
+  string phoneNumber = 1;
+  string verificationCode = 2;
+}
+
+message VerifyCodeResponse {
+  string accessToken = 2;
+  string refreshToken = 3;
+}
+
