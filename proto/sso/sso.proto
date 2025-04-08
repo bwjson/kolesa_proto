@@ -9,6 +9,7 @@ option go_package = 'kolesa_proto.sso.v1;ssov1';
 service Auth {
   rpc SendVerificationCode (SendVerificationCodeRequest) returns (google.protobuf.Empty);
   rpc VerifyCode (VerifyCodeRequest) returns (VerifyCodeResponse);
+  rpc RefreshAccessToken(RefreshAccessTokenRequest) returns (RefreshAccessTokenResponse);
 }
 
 message SendVerificationCodeRequest {
@@ -21,7 +22,15 @@ message VerifyCodeRequest {
 }
 
 message VerifyCodeResponse {
-  string accessToken = 2;
-  string refreshToken = 3;
+  string accessToken = 1;
+  string refreshToken = 2;
+}
+
+message RefreshAccessTokenRequest {
+  string refreshToken = 1;
+}
+
+message RefreshAccessTokenResponse {
+  string accessToken = 1;
 }
 

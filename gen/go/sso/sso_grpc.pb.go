@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	Auth_SendVerificationCode_FullMethodName = "/auth.Auth/SendVerificationCode"
 	Auth_VerifyCode_FullMethodName           = "/auth.Auth/VerifyCode"
+	Auth_RefreshAccessToken_FullMethodName   = "/auth.Auth/RefreshAccessToken"
 )
 
 // AuthClient is the client API for Auth service.
@@ -30,6 +31,7 @@ const (
 type AuthClient interface {
 	SendVerificationCode(ctx context.Context, in *SendVerificationCodeRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	VerifyCode(ctx context.Context, in *VerifyCodeRequest, opts ...grpc.CallOption) (*VerifyCodeResponse, error)
+	RefreshAccessToken(ctx context.Context, in *RefreshAccessTokenRequest, opts ...grpc.CallOption) (*RefreshAccessTokenResponse, error)
 }
 
 type authClient struct {
@@ -60,12 +62,23 @@ func (c *authClient) VerifyCode(ctx context.Context, in *VerifyCodeRequest, opts
 	return out, nil
 }
 
+func (c *authClient) RefreshAccessToken(ctx context.Context, in *RefreshAccessTokenRequest, opts ...grpc.CallOption) (*RefreshAccessTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RefreshAccessTokenResponse)
+	err := c.cc.Invoke(ctx, Auth_RefreshAccessToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServer is the server API for Auth service.
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility.
 type AuthServer interface {
 	SendVerificationCode(context.Context, *SendVerificationCodeRequest) (*emptypb.Empty, error)
 	VerifyCode(context.Context, *VerifyCodeRequest) (*VerifyCodeResponse, error)
+	RefreshAccessToken(context.Context, *RefreshAccessTokenRequest) (*RefreshAccessTokenResponse, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -81,6 +94,9 @@ func (UnimplementedAuthServer) SendVerificationCode(context.Context, *SendVerifi
 }
 func (UnimplementedAuthServer) VerifyCode(context.Context, *VerifyCodeRequest) (*VerifyCodeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyCode not implemented")
+}
+func (UnimplementedAuthServer) RefreshAccessToken(context.Context, *RefreshAccessTokenRequest) (*RefreshAccessTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RefreshAccessToken not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 func (UnimplementedAuthServer) testEmbeddedByValue()              {}
@@ -139,6 +155,24 @@ func _Auth_VerifyCode_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Auth_RefreshAccessToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RefreshAccessTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).RefreshAccessToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_RefreshAccessToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).RefreshAccessToken(ctx, req.(*RefreshAccessTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Auth_ServiceDesc is the grpc.ServiceDesc for Auth service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -153,6 +187,10 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VerifyCode",
 			Handler:    _Auth_VerifyCode_Handler,
+		},
+		{
+			MethodName: "RefreshAccessToken",
+			Handler:    _Auth_RefreshAccessToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
