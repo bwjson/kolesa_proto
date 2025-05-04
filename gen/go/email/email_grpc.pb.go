@@ -20,14 +20,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Email_SendVerificationCode_FullMethodName = "/email.Email/SendVerificationCode"
+	Email_SendEmail_FullMethodName = "/email.Email/SendEmail"
 )
 
 // EmailClient is the client API for Email service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type EmailClient interface {
-	SendVerificationCode(ctx context.Context, in *SendEmailRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	SendEmail(ctx context.Context, in *SendEmailRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type emailClient struct {
@@ -38,10 +38,10 @@ func NewEmailClient(cc grpc.ClientConnInterface) EmailClient {
 	return &emailClient{cc}
 }
 
-func (c *emailClient) SendVerificationCode(ctx context.Context, in *SendEmailRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *emailClient) SendEmail(ctx context.Context, in *SendEmailRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, Email_SendVerificationCode_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Email_SendEmail_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (c *emailClient) SendVerificationCode(ctx context.Context, in *SendEmailReq
 // All implementations must embed UnimplementedEmailServer
 // for forward compatibility.
 type EmailServer interface {
-	SendVerificationCode(context.Context, *SendEmailRequest) (*emptypb.Empty, error)
+	SendEmail(context.Context, *SendEmailRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedEmailServer()
 }
 
@@ -63,8 +63,8 @@ type EmailServer interface {
 // pointer dereference when methods are called.
 type UnimplementedEmailServer struct{}
 
-func (UnimplementedEmailServer) SendVerificationCode(context.Context, *SendEmailRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendVerificationCode not implemented")
+func (UnimplementedEmailServer) SendEmail(context.Context, *SendEmailRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendEmail not implemented")
 }
 func (UnimplementedEmailServer) mustEmbedUnimplementedEmailServer() {}
 func (UnimplementedEmailServer) testEmbeddedByValue()               {}
@@ -87,20 +87,20 @@ func RegisterEmailServer(s grpc.ServiceRegistrar, srv EmailServer) {
 	s.RegisterService(&Email_ServiceDesc, srv)
 }
 
-func _Email_SendVerificationCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Email_SendEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SendEmailRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(EmailServer).SendVerificationCode(ctx, in)
+		return srv.(EmailServer).SendEmail(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Email_SendVerificationCode_FullMethodName,
+		FullMethod: Email_SendEmail_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EmailServer).SendVerificationCode(ctx, req.(*SendEmailRequest))
+		return srv.(EmailServer).SendEmail(ctx, req.(*SendEmailRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -113,8 +113,8 @@ var Email_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*EmailServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SendVerificationCode",
-			Handler:    _Email_SendVerificationCode_Handler,
+			MethodName: "SendEmail",
+			Handler:    _Email_SendEmail_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
