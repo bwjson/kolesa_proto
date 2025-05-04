@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package email;
+
+import "google/protobuf/empty.proto";
+
+option go_package = 'kolesa_proto.email.v1;emailv1';
+
+service Email {
+  rpc SendVerificationCode (SendEmailRequest) returns (google.protobuf.Empty);
+}
+
+message SendEmailRequest {
+  string email = 1;
+  string subject = 2;
+  string message = 3;
+}
+
